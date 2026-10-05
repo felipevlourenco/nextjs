@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Link from 'next/link';
+import { SessionProvider } from './components/SessionProvider';
+import UserButton from './components/UserButton';
 import './globals.css';
 
 const geistSans = Geist({
@@ -19,11 +22,28 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
-    </html>
+    <SessionProvider>
+      <html
+        lang="en"
+        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+      >
+        <body className="min-h-full flex flex-col">
+          <header className="flex text-white font-bold text-2xl">
+            <div className="flex grow">
+              <Link href="/" className="px-4 py-2 hover:bg-zinc-700">
+                Home
+              </Link>
+              <Link href="/about" className="px-4 py-2 hover:bg-zinc-700">
+                About
+              </Link>
+            </div>
+            <div className="flex items-center justify-center px-4 py-2 hover:bg-zinc-700">
+              <UserButton />
+            </div>
+          </header>
+          {children}
+        </body>
+      </html>
+    </SessionProvider>
   );
 }
