@@ -1,3 +1,5 @@
+import type { UIMessage } from "ai";
+
 export interface Chat {
   id: number;
   name: string;
@@ -5,16 +7,6 @@ export interface Chat {
   timestamp: Date;
 }
 
-export interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-export interface StorageMessage extends Message {
-  id: number;
-  chat_id: number;
-}
-
 export interface ChatWithMessages extends Chat {
-  messages: StorageMessage[];
+  messages: UIMessage[];
 }

@@ -2,44 +2,50 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { type Message } from '@/types';
-import { useRouter } from 'next/navigation';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport, type UIMessage } from 'ai';
 import { useRef, useState } from 'react';
-import { getCompletion } from '../server-actions/getCompletion';
+import { newChat } from '../server-actions/newChat';
 import Transcript from './Transcript';
+
+// Send only the newest message (+ chatId from sendMessage); the server loads the history.
+const transport = new DefaultChatTransport({
+  api: '/api/chat',
+  prepareSendMessagesRequest: ({ messages, body }) => ({
+    body: { ...body, message: messages[messages.length - 1] },
+  }),
+});
 
 const Chat = ({
   id,
   messages: initialMessages = [],
 }: {
   id?: number | null;
-  messages?: Message[];
+  messages?: UIMessage[];
 }) => {
-  const router = useRouter();
+  const chatIdRef = useRef(id);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const chatIdRef = useRef<number | null>(id);
+
+  const { messages, sendMessage, status } = useChat({
+    id: id ? String(id) : undefined,
+    messages: initialMessages,
+    transport,
+  });
 
   const onSendHandler = async () => {
-    const completions = await getCompletion({
-      id: chatIdRef.current,
-      mergeHistory: [
-        ...messages,
-        {
-          role: 'user',
-          content: message,
-        },
-      ],
-    });
+    const text = message.trim();
+
+    if (!text || status !== 'ready') return;
+
+    setMessage('');
 
     if (!chatIdRef.current) {
-      router.push(`/chats/${completions.chatId}`);
-      router.refresh();
+      chatIdRef.current = await newChat(text);
+      // // Update the URL without remounting, so the stream keeps going.
+      window.history.replaceState(null, '', `/chats/${chatIdRef.current}`);
     }
 
-    chatIdRef.current = completions.chatId;
-    setMessage('');
-    setMessages(completions.messages);
+    sendMessage({ text }, { body: { chatId: chatIdRef.current } });
   };
 
   return (
@@ -57,7 +63,11 @@ const Chat = ({
             }
           }}
         />
-        <Button onClick={onSendHandler} className="ml-3 text-xl">
+        <Button
+          onClick={onSendHandler}
+          disabled={status !== 'ready'}
+          className="ml-3 text-xl"
+        >
           Send
         </Button>
       </div>
