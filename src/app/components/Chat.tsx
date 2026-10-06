@@ -6,6 +6,7 @@ import { type Message } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { getCompletion } from '../server-actions/getCompletion';
+import Transcript from './Transcript';
 
 const Chat = ({
   id,
@@ -43,19 +44,7 @@ const Chat = ({
 
   return (
     <div className="flex flex-col dark:bg-black">
-      {messages.map((msg, index) => (
-        <div
-          key={index}
-          className={`mb-5 flex flex-col
-                 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
-        >
-          <div
-            className={`p-2 rounded-md ${msg.role === 'user' ? 'bg-blue-800' : 'bg-gray-800'}`}
-          >
-            <span className="pr-5 pl-5">{msg.content}</span>
-          </div>
-        </div>
-      ))}
+      <Transcript messages={messages} truncate={false} />
       <div className="flex border-t-2 mt-5 pt-5">
         <Input
           className="grow text-xl"
