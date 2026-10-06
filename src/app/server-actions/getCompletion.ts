@@ -15,7 +15,7 @@ export async function getCompletion({
   id,
   mergeHistory,
 }: {
-  id: number | null;
+  id?: number | null;
   mergeHistory: MergeHistory;
 }) {
   const response = await openai.chat.completions.create({

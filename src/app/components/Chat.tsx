@@ -3,13 +3,21 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { type Message } from '@/types';
+import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { getCompletion } from '../server-actions/getCompletion';
 
-const Chat = () => {
+const Chat = ({
+  id,
+  messages: initialMessages = [],
+}: {
+  id?: number | null;
+  messages?: Message[];
+}) => {
+  const router = useRouter();
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const chatIdRef = useRef<number | null>(null);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const chatIdRef = useRef<number | null>(id);
 
   const onSendHandler = async () => {
     const completions = await getCompletion({
@@ -22,6 +30,11 @@ const Chat = () => {
         },
       ],
     });
+
+    if (!chatIdRef.current) {
+      router.push(`/chats/${completions.chatId}`);
+      router.refresh();
+    }
 
     chatIdRef.current = completions.chatId;
     setMessage('');

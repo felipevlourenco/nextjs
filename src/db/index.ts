@@ -1,5 +1,5 @@
-import { Chat, ChatWithMessages, Message } from "@/types";
-import postgres from "postgres";
+import { Chat, ChatWithMessages, Message } from '@/types';
+import postgres from 'postgres';
 
 const sql = postgres(process.env.POSTGRES_URL!);
 
@@ -37,7 +37,7 @@ export async function getChat(
     ...chats[0],
     messages: messages.map((msg) => ({
       ...msg,
-      role: msg.role as "user" | "assistant",
+      role: msg.role as 'user' | 'assistant',
       content: msg.content,
     })),
   } as ChatWithMessages;
@@ -62,7 +62,7 @@ export async function getChatsWithMessages(
 
     chat.messages = messages.map((msg) => ({
       ...msg,
-      role: msg.role as "user" | "assistant",
+      role: msg.role as 'user' | 'assistant',
       content: msg.content,
     }));
   }
@@ -75,7 +75,7 @@ export async function getMessages(chatId: number) {
 
   return messages.map((msg) => ({
     ...msg,
-    role: msg.role as "user" | "assistant",
+    role: msg.role as 'user' | 'assistant',
     content: msg.content,
   }));
 }
