@@ -2,22 +2,28 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
-import { getCompletion, type Message } from '../server-actions/getCompletion';
+import { type Message } from '@/types';
+import { useRef, useState } from 'react';
+import { getCompletion } from '../server-actions/getCompletion';
 
 const Chat = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const chatIdRef = useRef<number | null>(null);
 
   const onSendHandler = async () => {
-    const completions = await getCompletion([
-      ...messages,
-      {
-        role: 'user',
-        content: message,
-      },
-    ]);
+    const completions = await getCompletion({
+      id: chatIdRef.current,
+      mergeHistory: [
+        ...messages,
+        {
+          role: 'user',
+          content: message,
+        },
+      ],
+    });
 
+    chatIdRef.current = completions.chatId;
     setMessage('');
     setMessages(completions.messages);
   };
