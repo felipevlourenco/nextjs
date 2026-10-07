@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation';
 import Transcript from './Transcript';
 
 export default async function PreviousChats() {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
   const session = await getServerSession();
 
   if (!session?.user?.email) {

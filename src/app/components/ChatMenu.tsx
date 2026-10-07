@@ -7,7 +7,6 @@ import { getChats } from '@/db';
 import { notFound } from 'next/navigation';
 
 export default async function ChatMenu() {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
   const session = await getServerSession();
 
   if (!session?.user?.email) {
