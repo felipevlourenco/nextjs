@@ -10,7 +10,7 @@ const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ profile }: { profile: { login: string } }) {
-      return profile.login === 'felipevlourenco';
+      return profile.login === process.env.GITHUB_ACCOUNT;
     },
   } as unknown as CallbacksOptions,
 };
